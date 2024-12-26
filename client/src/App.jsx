@@ -1,10 +1,12 @@
-import React from 'react'
+import ChatRoom from "./components/ChatRoom"
+import Sidebar from "./components/Sidebar"
 
 const App = () => {
   return (
-    <h1 className="text-3xl font-bold underline">
-    Hello world!
-  </h1>
+   <div className=" w-full h-screen flex  items-center">
+     <Sidebar/>
+     <ChatRoom/>
+   </div>
   )
 }
 
