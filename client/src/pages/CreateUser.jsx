@@ -3,34 +3,46 @@ import bgImage from "../assets/image/bg.jpg";
 import { Camera } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useStore } from "../store";
+import { createUser } from "../api";
+import { useNavigate } from 'react-router-dom';
 
 const CreateUser = () => {
   const [image, setImage] = useState("");
   const [username, setUsername] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phone, setPhoneNumber] = useState("");
+  const { authUser , setAuthUser} = useStore()
+  const navigate = useNavigate()
+  
   const imageUpload = (file) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       setImage(reader.result);
-      console.log(reader.result);
     };
     if (file) {
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSubmit = () => {
-    if(!image || !username || !phoneNumber){
+  const handleSubmit = async () => {
+    if(!image || !username || !phone){
     return  toast.error('All fields are required')
     }
-
-    const data = {
+    const userData = {
       image,
       username,
-      phoneNumber
+      phone,
+      email : authUser.email
     }
 
-    console.log(data)
+    try {
+      const data = await createUser(userData);
+      data.code == 1 && toast.success('User created successfully')
+      data.data && setAuthUser(data.data)
+      navigate('/')
+    } catch (error) {
+      toast.error(error.message)
+    }
   }
 
   return (

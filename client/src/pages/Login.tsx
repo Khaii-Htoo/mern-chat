@@ -2,18 +2,29 @@ import React, { useEffect } from 'react'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { firebaseAuth } from '../utils/firebaseConfig';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import loginImage from '../assets/image/loginImg.gif'
+import { useStore } from '../store';
+import { checkUser } from '../api';
 const Login = () => {
+  const { setAuthUser } = useStore()
+
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     const provider = new GoogleAuthProvider();
     const { user } = await signInWithPopup(firebaseAuth, provider);
     if(user){
-      const res = await axios.post(`http://localhost:5000/api/checkUser`, { email: user.email });
-      console.log(res.data);
+      const data = await checkUser(user.email);
+      data && data.code == 1 ? navigate('/') : navigate('/createUser');
+      user.email && setAuthUser({
+        email : user.email
+      });
     }
 
   }
+
+
   return (
     <div className='w-full h-screen justify-center items-center bg-primary'>
       <div className=" flex items-center justify-center pt-32">
